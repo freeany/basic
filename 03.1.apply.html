@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			function fn(b, c) {
+				console.log(this.a, b, c)
+			}
+
+			const obj = { a: 1 }
+
+			// const r = fn(2, 3)
+			// fn.apply(obj, [3, 5])
+
+			Function.prototype.apply1 = function (obj, args) {
+				const _f = Symbol()
+				obj[_f] = this
+				const result = obj[_f](...args)
+				delete obj[_f]
+				return result
+			}
+
+			fn.apply1(obj, [3, 5])
+		</script>
+	</body>
+</html>

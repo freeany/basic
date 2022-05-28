@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			Array.prototype.reducer = function (callback, prev) {
+				for (let i = 0; i < this.length; i++) {
+					if (prev === undefined) {
+						prev = callback(this[i], this[i + 1], i, this)
+						i++
+					} else {
+						prev = callback(prev, this[i], i, this)
+					}
+				}
+				return prev
+			}
+		</script>
+		<script>
+			function sum(a, b) {
+				return a + b
+			}
+			function toUpper(str) {
+				return str.toUpperCase()
+			}
+			function add(str) {
+				return `**${str}**`
+			}
+
+			// console.log(add(toUpper(sum('tiantian', 'up'))))
+			// 现在我们想实现一个compose方法，对方法进行组合。
+			const r1 = compose(add, toUpper, sum)('tiantian', 'up')
+			console.log(r1)
+
+			// function compose(...fns) {
+			// 	return function (...args) {
+			// 		const lastFn = fns.pop()
+			// 		return fns.reduceRight((result, currentFn) => {
+			// 			return currentFn(result)
+			// 		}, lastFn(...args))
+			// 	}
+			// }
+
+			function compose(...fns) {
+				console.log(fns)
+				return fns.reducer((pre, next) => {
+					return (...args) => {
+						return pre(next(...args))
+					}
+				})
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			const target = {
+				field1: 1,
+				field2: undefined,
+				field3: 'ConardLi',
+				field4: {
+					child: 'child',
+					child2: {
+						child2: 'child2'
+					}
+				},
+				field5: [1, 2],
+				fn() {}
+			}
+			target.target = target
+
+			const result = dc(target)
+			target.field4.child = 'giaogiao'
+			target.field5.push(1231)
+			console.log(result)
+			console.log(target)
+
+			function dc(target, map = new WeakMap()) {
+				// null 和 undefined是不需要拷贝的。
+				if (target === null) return target
+				if (target instanceof RegExp) return new RegExp(target)
+				if (target instanceof Date) return new Date(target)
+
+				if (typeof target === 'object') {
+					const cloneTarget = new target.constructor()
+					if (map.get(target)) {
+						return map.get(target)
+					}
+					map.set(target, cloneTarget)
+					for (let key in target) {
+						cloneTarget[key] = dc(target[key], map)
+					}
+					return cloneTarget
+				} else {
+					return target
+				}
+			}
+		</script>
+	</body>
+</html>

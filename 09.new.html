@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			function Person(name) {
+				this.name = name
+				return true
+			}
+			Person.prototype.say = function () {
+				console.log('说话')
+			}
+			// const p = new Person('zs')
+			// 可以看到，new Persopn时，如果Person函数返回的是基本数据类型，那么就直接忽略，还是返回该类的实例。
+			// 如果是引用数据类型，那么new Person返回的就是这个Object
+			// console.log(p.name)
+			// p.say()
+
+			function myNew(fn, ...args) {
+				let obj = {}
+				obj.__proto__ = fn.prototype
+
+				const r = fn.apply(obj, args)
+				if (r instanceof Object) {
+					return r
+				}
+				return obj
+			}
+			const p = myNew(Person, 'zs')
+			console.log(p.name)
+			p.say()
+		</script>
+	</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			// 每个级别的员工的工资不一样
+			function getSalary(baseMoney) {
+				return function (yeji) {
+					return baseMoney + yeji
+				}
+			}
+
+			// p6
+			const getSalaryLevel6 = getSalary(20000)
+			// p7
+			const getSalaryLevel7 = getSalary(80000)
+
+			const xm = getSalaryOf6(1000)
+			const xh = getSalaryOf6(2000)
+
+			const xp = getSalaryOf7(2000)
+			const xw = getSalaryOf7(3000)
+
+			console.log(xm, xh, xp, xw)
+		</script>
+	</body>
+</html>

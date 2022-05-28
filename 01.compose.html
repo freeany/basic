@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			const keys = ['name', 'age']
+			const values = ['zs', 18]
+
+			// reduce 常见功能： 多个数据变成一个数据，收敛
+			// const p = keys.reduce((obj, key, index) => {
+			// 	obj[key] = values[index]
+			// 	return obj
+			// }, {})
+			// console.log(p)
+
+			// 逗号运算符简化代码
+			// const p = keys.reduce((obj, key, index) => ((obj[key] = values[index]), obj), {})
+			// console.log(p)
+			// (1,2,3,4) 返回4， 逗号运算符返回最后一个数据
+
+			// compose 方法， 组合
+			function sum(a, b) {
+				return a + b
+			}
+			function toUpper(str) {
+				return str.toUpperCase()
+			}
+			function add(str) {
+				return `**${str}**`
+			}
+
+			// console.log(add(toUpper(sum('tiantian', 'up'))))
+			// 现在我们想实现一个compose方法，对方法进行组合。
+			// const r1 = compose(add, toUpper, sum)('tiantian', 'up')
+			// console.log(r1)
+
+			// function compose(...fns) {
+			// 	function fn(...args) {
+			// 		const lastFn = fns.pop()
+			// 		return fns.reduceRight((pre, current) => {
+			// 			return current(pre)
+			// 		}, lastFn(...args))
+			// 	}
+			// 	return fn
+			// }
+
+			// 不用reduceRight, 用reduce写一个
+			// 多想一下
+
+			// 实现一个reduce
+
+			//
+			// const arr = [1, 2, 3, 4, 5]
+			// arr.reduceRight((pre, current) => {
+			// 	console.log(pre, current)
+			// 	return pre + current
+			// }, 0)
+		</script>
+	</body>
+</html>

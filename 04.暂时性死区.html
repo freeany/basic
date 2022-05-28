@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			// 没有用babel编译：  Uncaught ReferenceError: Cannot access 'a' before initialization
+			let a = 1
+			{
+				// 但是如果在web开发中使用babel编译后，就变成了
+				/*
+            "use strict";
+            var a = 1;
+            {
+              console.log(_a);
+              var _a = 2;
+            }
+        */
+				console.log(a)
+				let a = 2
+			}
+		</script>
+	</body>
+</html>

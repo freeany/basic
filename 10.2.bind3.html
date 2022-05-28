@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			function fn(b, c, d) {
+				console.log(this.a, b, c, d)
+			}
+			fn.prototype.age = 333
+			const obj = { a: 33 }
+			// fn.bind(obj, 99, 55)(66)
+			Function.prototype.bind1 = function (obj) {
+				const fn = this
+				const args = Array.prototype.slice.call(arguments, 1)
+				var bound = function () {
+					// 当执行new的时候， bound的prototype(fn)挂载到内部的一个对象中，然后return 出来
+					// 此时的this指向new出来的对象, 所以this.constructor指向fn
+					const ms = [...args, ...arguments]
+					const that = this.constructor === fn ? this : obj
+					return fn.apply(that, ms)
+				}
+				var _fn = function () {}
+				_fn.prototype = fn.prototype
+				// bound.prototype = fn.prototype
+				bound.prototype = new _fn()
+				return bound
+			}
+
+			const bound = fn.bind1(obj, 99)
+			var p = bound(22)
+			console.dir(bound)
+			console.log(p)
+
+			// 测试
+		</script>
+	</body>
+</html>

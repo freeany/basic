@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script src="./12_this面试题四.js"></script>
+
+		<script>
+			throw new Error('不执行')
+			function Cat(name) {
+				this.name = name
+				console.log(this)
+				this.fn = function () {
+					console.log(this)
+				}
+			}
+			Cat.prototype.say = function () {
+				console.log('say...')
+			}
+			const p1 = Cat('p1') // 当作普通函数调用 window
+			const p2 = new Cat('p2') // 使用new关键字调用 Cat {name: 'p2'}
+			const p3 = Cat.bind({ hh: '2' })('p3') // {hh: '2', name: 'p3'}
+			const p4 = Cat.bind({ hh: '4' })
+			const p5 = new p4('p5') // Cat {name: 'p5'}
+			p5.fn.call({}) // {} // 这也说明了构造函数内部的函数的this也是由外部原因绑定的，结论看起来很正常，但是当时那个弯没绕过来，还是纠结了一阵子的。
+		</script>
+	</body>
+</html>

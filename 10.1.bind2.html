@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			var z = 0
+			var obj = {
+				z: 1
+			}
+
+			function fn(x, y) {
+				this.name = '听风是风'
+				console.log(this)
+				console.log(this.z)
+				console.log(x)
+				console.log(y)
+			}
+			fn.prototype.age = 26
+
+			var bound = fn.bind(obj, 2)
+
+			var person = new bound(3) //undefined 2 3
+			// 当构造函数被new构造调用时，本质上构造函数中会创建一个实例对象，函数内部的this指向此实例，当执行到console.log(this.z)这一行时，this上并未被赋予属性z，所以输出undefined，这也解释了为什么bound函数被new构造时会丢失原本绑定的this。
+
+			console.log(person.name) //听风是风
+			console.log(person.age) //26
+
+			// 我们得到了 被bind过的函数通过new操作符运算以后该函数的this指向了实例自身，其他的情况该函数的this还是指向原来绑定过的对象(this)。
+
+			// 那么放到代码上就是：如果是new调用，bound函数中的this指向实例自身，而如果是普通调用this指向obj，怎么区分呢？
+			// 就要用到这么一个知识点: 构造函数实例的constructor属性永远指向构造函数本身
+			function Fn() {}
+			var o = new Fn()
+			console.log(o.constructor === Fn) //true
+			// 所以当用new 调用bind后的函数后，该函数的constructor一定和 那个调用bind函数的函数相等
+
+			// 所以可得完整版的bind函数, 见10.2.bind3.html
+		</script>
+	</body>
+</html>

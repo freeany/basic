@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			let activeFn = null
+			const wm = new WeakMap()
+			function watchFn(fn) {
+				activeFn = fn
+				fn()
+				activeFn = null
+			}
+			class Depend {
+				constructor() {
+					this.watchFns = new Set()
+				}
+				depend() {
+					if (activeFn) {
+						this.watchFns.add(activeFn)
+					}
+				}
+				notify() {
+					;[...this.watchFns].forEach(fn => fn())
+				}
+			}
+
+			function getDepend(target, key) {
+				let obj = wm.get(target)
+				if (!obj) {
+					wm.set(target, new Map())
+				}
+				obj = wm.get(target)
+
+				let depend = obj.get(key)
+				if (!depend) {
+					obj.set(key, new Depend())
+				}
+				return obj.get(key) // new Depend()
+			}
+
+			function reactive(obj) {
+				const objProxy = new Proxy(obj, {
+					get(target, key, receiver) {
+						const depend = getDepend(target, key)
+						depend.depend()
+						return Reflect.get(target, key, receiver)
+					},
+					set(target, key, newValue, receiver) {
+						Reflect.set(target, key, newValue, receiver)
+						const depend = getDepend(target, key)
+						depend.notify()
+					}
+				})
+				return objProxy
+			}
+
+			const o = reactive({
+				name: 'haha',
+				age: 18
+			})
+			const o1 = reactive({
+				name: 'kk',
+				age: 22
+			})
+			watchFn(() => {
+				o.name
+				o1.age
+				console.log('oligei')
+			})
+
+			setTimeout(() => {
+				o.name = 12
+				o1.age = 55
+				console.log(wm)
+			}, 2000)
+		</script>
+	</body>
+</html>

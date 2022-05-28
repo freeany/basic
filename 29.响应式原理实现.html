@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			let activeFn = null
+			function watchFn(fn) {
+				activeFn = fn
+				fn()
+				activeFn = null
+			}
+			class Depend {
+				constructor() {
+					// this.reactiveFns = [] // 换成set集合，防止在一个watchFn的回调中获取了两次相同的变量，比如说watchFn(() => objProxy.name = 123; objProxy.name = 456) 这样会收集两次watchFn的回调函数。
+					this.reactiveFns = new Set()
+				}
+				addDepend(fn) {
+					// this.reactiveFns.push(fn)
+					this.reactiveFns.add(fn)
+				}
+				notify() {
+					;[...this.reactiveFns].forEach(fn => fn())
+				}
+				depend() {
+					if (activeFn) {
+						this.reactiveFns.add(activeFn)
+					}
+				}
+			}
+
+			const wm = new WeakMap()
+			function getDepend(target, key) {
+				const targetMap = wm.get(target)
+				if (!targetMap) {
+					wm.set(target, new Map())
+				}
+				const map = wm.get(target)
+				const value = map.get(key)
+				if (!value) {
+					map.set(key, new Depend())
+				}
+				return map.get(key)
+			}
+
+			function reactive(obj) {
+				const objProxy = new Proxy(obj, {
+					get(target, key, receiver) {
+						// console.log('get---', target, key)
+						const depend = getDepend(target, key)
+						// depend.addDepend(activeFn)
+						depend.depend() // get内部无需关心activeFn变量，只要调用depend方法即可。
+						return Reflect.get(target, key, receiver)
+					},
+					set(target, key, newValue, receiver) {
+						// console.log('set---', target, key, newValue)
+						const result = Reflect.set(target, key, newValue, receiver)
+						if (result) {
+							const dep = getDepend(target, key)
+							dep.notify()
+						}
+					}
+				})
+				return objProxy
+			}
+
+			// const obj = {
+			// 	name: 'ww',
+			// 	age: 18
+			// }
+
+			// const info = {
+			// 	title: 'xinxi',
+			// 	age: 22
+			// }
+			const objProxy = reactive({
+				name: 'ww',
+				age: 18
+			})
+			const infoProxy = reactive({
+				title: 'xinxi',
+				age: 22
+			})
+
+			watchFn(() => {
+				// 获取name将此watch收集到deps中
+				const n = objProxy.name
+				console.log('name触发')
+			})
+			watchFn(() => {
+				const a = objProxy.age
+				console.log('age触发')
+			})
+			watchFn(() => {
+				const a = infoProxy.title
+				console.log('title触发')
+			})
+			watchFn(() => {
+				const a = infoProxy.age
+				console.log('infoProxy-age触发')
+			})
+			// console.log(objProxy.name)
+			setTimeout(() => {
+				objProxy.name = 'wqe'
+				objProxy.age = 'wqe'
+				infoProxy.title = 'wqe'
+				infoProxy.age = 'wqe'
+			}, 1000)
+			// console.log(objProxy.name)
+		</script>
+	</body>
+</html>

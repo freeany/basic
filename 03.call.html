@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			// function fn1() {
+			// 	console.log(1)
+			// }
+			// function fn2() {
+			// 	console.log(2)
+			// }
+			// console.dir(Function.prototype)
+			// fn1.call.call.call(fn2)
+		</script>
+
+		<script>
+			;(function () {
+				function foo(h, w) {
+					console.log(h, w, this.a)
+					return h + w + this.a
+				}
+				let obj = {
+					a: 123,
+					_f() {
+						console.log('我是_f函数')
+					}
+				}
+				const r = foo.call(obj, 'c1', 'c2')
+				console.log(r)
+				obj._f()
+
+				// 实现一个call函数
+				Function.prototype.call2 = function (obj, ...args) {
+					// this指的是调用call方法的函数，
+					// 我们把this放到obj上面
+					/**
+            const obj = {
+              ...reset,
+              _f: function() {
+
+              }
+            }
+            // 使用obj调用_f,所以_f内部的this指向了obj。   _f即调用call2的函数
+          */
+
+					obj._f = this
+					const result = obj._f(...args)
+					delete obj._f
+					return result
+				}
+				const r1 = foo.call2(obj, 'hello', 'world')
+				obj._f() // error了，因为_f被删掉了，那么我们
+				console.log(r1)
+			})
+		</script>
+
+		<script>
+			;(function () {
+				function foo(h, w) {
+					console.log(h + w + this.a)
+				}
+				const obj = {
+					a: 1,
+					_f: function () {
+						console.log('_fn函数执行')
+					}
+				}
+
+				Function.prototype.call2 = function (obj, ...args) {
+					// 避免删除对象内部存在的是属性
+					const _f = Symbol()
+					obj[_f] = this
+					const result = obj[_f](...args)
+					delete obj[_f]
+				}
+				foo.call2(obj, 'h', 'w')
+				obj._f()
+			})
+
+			// 还要做的就是如果传入的是undefined或者null的话那么就指向global， 如果传入的不是Object类型那么就将传入的obj转成Object类型
+		</script>
+
+		<script>
+			;(function () {
+				function foo(h, w) {
+					console.log(this)
+					console.log(h + w + this.a)
+				}
+				const obj = { a: 1233 }
+
+				Function.prototype.call2 = function (obj, ...args) {
+					if (obj === undefined || obj === null) {
+						obj = globalThis
+					}
+					if (typeof obj !== 'object') {
+						obj = Object(obj)
+					}
+					const _f = Symbol()
+					obj[_f] = this
+					const result = obj[_f]
+					delete obj[_f]
+					return result
+				}
+				foo.call(1, 'he', 'wo')
+			})
+		</script>
+
+		<script>
+			// again
+
+			;(function () {
+				function foo(h, w) {
+					console.log(this)
+					return h + w + this.a
+				}
+
+				function foo2() {
+					console.log(2)
+				}
+				const obj = { a: 21 }
+
+				Function.prototype.call3 = function (obj, ...args) {
+					if (obj === null || obj === undefined) {
+						obj = globalThis
+					}
+					if (typeof obj !== 'object') {
+						obj = Object(obj)
+					}
+					const _fn = Symbol()
+					obj[_fn] = this
+					// 如果不用...的话，那么就要for循环arguments拼接函数形式的字符串，然后使用eval执行这个函数。
+					const result = obj[_fn](...args)
+					delete obj[_fn]
+					return result
+				}
+
+				// const r = foo.call3(obj, 'hel', 'wor')
+				const r = foo.call3.call3(foo2) // 多次call
+				console.log(r, 'rr')
+			})()
+		</script>
+	</body>
+</html>

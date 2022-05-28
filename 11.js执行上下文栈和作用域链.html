@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			/*
+      每个函数都会产生一个执行上下文，那么这些执行上下文是怎么管理的呢？
+      js引擎创建了一个执行上下文栈，我们用执行上下文栈来管理执行上下文。
+
+
+      函数的作用域在函数定义的时候就决定了，函数的作用域基于函数创建的位置。
+				JavaScript权威指南: JavaScript 函数的执行用到了作用域链，这个作用域链是在函数定义的时候创建的。嵌套的函数 f() 定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管何时何地执行函数 f()，这种绑定在执行 f() 时依然有效。
+
+			作用域规定了如何查找变量，也就是确定当前执行代码对变量的访问权限。
+			JavaScript 采用词法作用域(lexical scoping)，也就是静态作用域。
+
+			JavaScript 采用的是词法作用域，函数的作用域在函数定义的时候就决定了。
+			而与词法作用域相对的是动态作用域，函数的作用域是在函数调用的时候才决定的。
+    */
+
+			var scope = 'global scope'
+			function checkscope() {
+				var scope = 'local scope'
+				function f() {
+					return scope
+				}
+				return f()
+			}
+			checkscope() // 打印什么？
+
+			// 第二段
+			var scope = 'global scope'
+			function checkscope() {
+				var scope = 'local scope'
+				function f() {
+					return scope
+				}
+				return f
+			}
+			checkscope()()
+		</script>
+	</body>
+</html>
